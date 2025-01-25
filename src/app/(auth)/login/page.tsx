@@ -27,14 +27,16 @@ const initValidateField: ValidateField = {
 const Page = () => {
   const router = useRouter();
 
-  const query = new URLSearchParams(window?.location?.search);
-  const [isLoading, setIsLoading] = useState(true)
-  const redirect = query.get("redirect");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [qureyRedirect, setQureyRedirect] = useState('')
   const [form, setForm] = useState<FieldType>(initField);
   const [validateForm, setValidateForm] =
     useState<ValidateField>(initValidateField);
 
   useEffect(() => {
+    const query = new URLSearchParams(window?.location?.search);
+    setQureyRedirect(query.get("redirect") || '')
     const usernameStorage = localStorage.getItem("user");
     const passwordStorage = localStorage.getItem("password");
     // Check if localStorage is available on the client-side
@@ -45,7 +47,7 @@ const Page = () => {
         password: passwordStorage || "",
       }); // Set data from localStorage to the state
     }
-    setIsLoading(false)
+    setIsLoading(false);
   }, []); //
 
   const onFinish = () => {
@@ -61,8 +63,8 @@ const Page = () => {
       return;
     }
 
-    if (redirect) {
-      router.push(redirect);
+    if (qureyRedirect) {
+      router.push(qureyRedirect);
     }
   };
   const validate = (): boolean => {
@@ -79,9 +81,9 @@ const Page = () => {
     return !validateForm.username || !validateForm.password;
   };
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
- 
+
   return (
     <section className="flex flex-col items-center gap-8 p-8 border-solid border-black border-spacing-2 rounded-xl shadow-2xl">
       <div className="text-2xl font-bold">Login Form</div>
