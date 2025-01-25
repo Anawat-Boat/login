@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Button, Input } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "@ant-design/v5-patch-for-react-19";
 
 type FieldType = {
@@ -26,17 +26,27 @@ const initValidateField: ValidateField = {
 
 const Page = () => {
   const router = useRouter();
-  const usernameStorage = localStorage.getItem("user");
-  const passwordStorage = localStorage.getItem("password");
-  const query = new URLSearchParams(window.location.search);
+
+  const query = new URLSearchParams(window?.location?.search);
+  const [isLoading, setIsLoading] = useState(true)
   const redirect = query.get("redirect");
-  const [form, setForm] = useState<FieldType>({
-    ...initField,
-    username: usernameStorage || "",
-    password: passwordStorage || "",
-  });
+  const [form, setForm] = useState<FieldType>(initField);
   const [validateForm, setValidateForm] =
     useState<ValidateField>(initValidateField);
+
+  useEffect(() => {
+    const usernameStorage = localStorage.getItem("user");
+    const passwordStorage = localStorage.getItem("password");
+    // Check if localStorage is available on the client-side
+    if (usernameStorage || passwordStorage) {
+      setForm({
+        ...form,
+        username: usernameStorage || "",
+        password: passwordStorage || "",
+      }); // Set data from localStorage to the state
+    }
+    setIsLoading(false)
+  }, []); //
 
   const onFinish = () => {
     setValidateForm({ ...validateForm, form: false });
@@ -68,7 +78,10 @@ const Page = () => {
 
     return !validateForm.username || !validateForm.password;
   };
-
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+ 
   return (
     <section className="flex flex-col items-center gap-8 p-8 border-solid border-black border-spacing-2 rounded-xl shadow-2xl">
       <div className="text-2xl font-bold">Login Form</div>
