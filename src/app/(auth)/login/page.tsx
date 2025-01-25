@@ -1,9 +1,9 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { Button, Input } from "antd";
 import React, { useState } from "react";
 import "@ant-design/v5-patch-for-react-19";
-import { useRouter } from "next/navigation";
+
 type FieldType = {
   username: string;
   password: string;
@@ -25,7 +25,7 @@ const initValidateField: ValidateField = {
   form: false,
 };
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const query = new URLSearchParams(window.location.search);
   const redirect = query.get("redirect");
@@ -84,4 +84,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
