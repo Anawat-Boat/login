@@ -13,11 +13,10 @@ type ValidateField = {
   password: boolean;
   form: boolean;
 };
-const usernameStorage = localStorage.getItem("user");
-const passwordStorage = localStorage.getItem("password");
+
 const initField: FieldType = {
-  username: usernameStorage || "",
-  password: passwordStorage || "",
+  username: "",
+  password: "",
 };
 const initValidateField: ValidateField = {
   username: false,
@@ -27,15 +26,23 @@ const initValidateField: ValidateField = {
 
 const Page = () => {
   const router = useRouter();
+  const usernameStorage = localStorage.getItem("user");
+  const passwordStorage = localStorage.getItem("password");
   const query = new URLSearchParams(window.location.search);
   const redirect = query.get("redirect");
-  const [form, setForm] = useState<FieldType>(initField);
+  const [form, setForm] = useState<FieldType>({
+    ...initField,
+    username: usernameStorage || "",
+    password: passwordStorage || "",
+  });
   const [validateForm, setValidateForm] =
     useState<ValidateField>(initValidateField);
 
   const onFinish = () => {
     setValidateForm({ ...validateForm, form: false });
-    if (!validate()) {return;};
+    if (!validate()) {
+      return;
+    }
     localStorage.setItem("user", form.username);
     localStorage.setItem("password", form.password);
 
@@ -43,7 +50,7 @@ const Page = () => {
       setValidateForm({ ...validateForm, form: true });
       return;
     }
-   
+
     if (redirect) {
       router.push(redirect);
     }
@@ -54,8 +61,11 @@ const Page = () => {
       username: !form.username,
       password: !form.password,
     });
-    console.log('validateForm', !validateForm.username || !validateForm.password);
-    
+    console.log(
+      "validateForm",
+      !validateForm.username || !validateForm.password
+    );
+
     return !validateForm.username || !validateForm.password;
   };
 
@@ -64,13 +74,13 @@ const Page = () => {
       <div className="text-2xl font-bold">Login Form</div>
       <section className="flex flex-col items-center justify-center gap-4 ">
         <Input
-          status={validateForm.username|| validateForm.form ? "error" : ""}
+          status={validateForm.username || validateForm.form ? "error" : ""}
           placeholder="Please input your username!"
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e.target.value })}
         />
         <Input.Password
-          status={validateForm.password ||validateForm.form ? "error" : ""}
+          status={validateForm.password || validateForm.form ? "error" : ""}
           placeholder="Please input your password!"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
